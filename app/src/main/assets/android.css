@@ -1,0 +1,190 @@
+/*
+ * android.css — asezare stransa, numai pentru aplicatia Android.
+ *
+ * Fisierul asta nu exista in varianta din browser. Se incarca dupa foaia de
+ * stil a paginii si o corecteaza, fara sa atinga index.html. Asa, cand vine o
+ * versiune noua de HTML, se copiaza peste si nimic nu se pierde.
+ *
+ * Ce s-a masurat pe un ecran de 428x800: continutul ecranului BORD avea 843px
+ * intr-o fereastra de 532px. Din cei 311px in plus, cei mai multi nu veneau de
+ * la carduri — ele erau deja pe doua coloane — ci din doua locuri:
+ * butoanele de sus, care se asezau unul sub altul, si inelul bateriei, desenat
+ * la 250px intr-un desen care are mult gol in jur.
+ */
+
+/* ---------- bara de sus: totul pe un rand ---------- */
+
+/* Butoanele stateau unul sub altul si mancau peste 200px. Le lasam pe un
+   rand, dar cu voie sa treaca pe al doilea daca nu incap — altfel
+   "Conectează", care e ultimul, iese din ecran si nu mai poate fi apasat. */
+.cap {
+  flex-wrap: wrap;
+  gap: 4px 6px;
+  padding-bottom: 4px;
+}
+
+.cap .rand {
+  flex-wrap: nowrap;
+  gap: 4px;
+  flex: 1 1 auto;
+  min-width: 0;
+  justify-content: flex-end;
+}
+
+.cap .mm {
+  padding: 5px 7px;
+  font-size: 11px;
+  white-space: nowrap;
+  border-radius: 9px;
+}
+
+.cap .marca { min-width: 0; flex: 0 1 auto; }
+.cap .titlu { font-size: 12px; }
+.cap #ceasEcran { font-size: 14px !important; }
+.cap #ceasSesiune { display: none; }   /* durata se vede oricum pe card */
+
+/* ---------- inelul bateriei ---------- */
+
+/* desenul are 240x232 cu mult gol; taiem golul si il facem mic, ca sa stea
+   alaturi de carduri, nu deasupra lor */
+#p-bord .g2 > .tl:first-child {
+  padding: 4px !important;
+  align-items: center;
+  align-self: start;      /* altfel cardul se intinde cat coloana de carduri */
+}
+
+/* inelul pe o coloana ingusta, cardurile pe restul: asa nu mai ramane gol */
+#p-bord .g2 { grid-template-columns: 34% 1fr !important; }
+
+#p-bord .g2 > .tl:first-child svg {
+  max-width: 132px !important;
+}
+
+/* ---------- cardurile ---------- */
+
+.tl { padding: 7px 9px; border-radius: 12px; }
+.g { gap: 6px; margin-bottom: 6px; }
+
+/* doua coloane peste tot, chiar si in spatiu ingust */
+.g3 { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+.g2 { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+
+/* cifrele mari: destul cat sa se citeasca dintr-o privire, nu mai mult */
+.val { font-size: clamp(19px, 2.3vmin, 30px) !important; margin: 1px 0 0 !important; }
+/* etichetele care treceau pe doua randuri furau inaltime din fiecare card */
+.lbl { font-size: 9px !important; letter-spacing: .04em; white-space: nowrap; }
+.mic { font-size: 11px !important; margin: 1px 0 0 !important; line-height: 1.25; }
+.un  { font-size: 11px !important; }
+
+/* ---------- bara de jos ---------- */
+
+.nav { gap: 2px; padding: 3px; }
+.nav button { padding: 4px 2px; font-size: 9px; }
+
+/* ---------- ecranele cu multe randuri ---------- */
+
+.rw { padding: 1px 0; font-size: 12px !important; }
+.capC { font-size: 10px !important; }
+.cut { padding: 5px 7px; border-radius: 10px; }
+.cut .val { font-size: clamp(17px, 2.1vmin, 27px) !important; }
+
+/* ecranul CELULE: 120 de casute intra numai daca sunt mici */
+#p-celule .cel { font-size: 10px; padding: 2px 1px; }
+
+/* ---------- ecrane in care oricum nu incape totul ---------- */
+/*
+ * SETARI, MOTOR si ENERGIE au mai mult continut decat un ecran de telefon,
+ * oricat l-am stramta. Acolo derularea ramane, si e in regula: nu le citesti
+ * din mers. Ce trebuia sa incapa fara derulare e BORD, iar acolo intra.
+ */
+
+/* ---------- ecranul ENERGIE ---------- */
+
+/* Cele doua panouri se aseaza unul sub altul, pe toata latimea. Asa cele sase
+   casute stau doua pe rand cu eticheta intreaga. La trei pe rand ieseau coloane
+   de 65px si scria "COST PRIZ...", taiat. Inaltimea conteaza, dar nu cu pretul
+   unei etichete pe care n-o poti citi. */
+#p-hibrid .doua { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+/* etichetele din casute au voie pe doua randuri, ele nu sunt titluri de card */
+.cut .lbl { white-space: normal !important; }
+#p-hibrid .doua.faze { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+#p-hibrid .detalii { font-size: 11px; line-height: 1.3; }
+
+/* ---------- ecranul HARTA ---------- */
+
+/* desenul traseului era mai inalt decat trebuie ca sa se inteleaga drumul */
+#svgHarta, #p-harta .tl svg { max-height: 210px; }
+#p-harta .g3 { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }
+
+/* ---------- ecranul SETARI ---------- */
+
+#p-setari .rw, #p-setari label { font-size: 11px !important; padding: 1px 0; }
+#p-setari input, #p-setari select { padding: 3px 5px; font-size: 12px; }
+
+/* ultimele reglaje, dupa masurare */
+#p-hibrid .tl { padding: 6px 8px; }
+#p-hibrid .cut { padding: 4px 6px; }
+#p-hibrid .cut .val { font-size: clamp(15px, 1.9vmin, 24px) !important; }
+#p-setari .tl { padding: 6px 8px; }
+#p-setari .lbl { font-size: 9px !important; }
+#p-hibrid .g { gap: 5px; margin-bottom: 5px; }
+
+/* ---------- redarea traseului, langa harta ---------- */
+
+/* harta se strange, ca sub ea sa incapa comenzile si valorile momentului */
+#p-harta #mapa { height: min(34dvh, 280px) !important; }
+#p-harta #svgHarta { max-height: 190px; }
+
+.redare-android { margin-top: 6px; padding: 7px 9px !important; }
+.redare-android .mic { font-size: 10px !important; }
+
+/* cele cinci valori ale momentului, pe un singur rand sub harta.
+   Selectorul are nevoie de #p-harta: regula "#p-harta .g3" de mai sus are un
+   id, deci bate orice combinatie de clase, oricat de tarziu ar veni. */
+#p-harta .redare-android .g3 {
+  grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+  gap: 4px !important;
+  margin-top: 6px !important;
+}
+#p-harta .redare-android .g3 .tl { padding: 4px 3px; }
+#p-harta .redare-android .g3 .lbl { font-size: 8px !important; white-space: normal; line-height: 1.15; }
+#p-harta .redare-android .g3 .val { font-size: 15px !important; }
+#p-harta .redare-android .g3 .un { font-size: 9px !important; }
+
+/* butoanele hartii se asezau pe trei randuri si furau 150px */
+/* wrap, nu nowrap: cu nowrap ultimul buton, "Centreaza pe mine", iesea din
+   cartonas si nu mai putea fi apasat */
+#p-harta .tl > .rand { flex-wrap: wrap; gap: 3px 4px; }
+#p-harta .tl > .rand .mm { padding: 3px 5px; font-size: 9px; white-space: nowrap; }
+#p-harta .tl > .rand .lbl { flex: 0 0 auto; }
+/* ultimii 21px, ca redarea sa intre fara derulare */
+#p-harta #mapa { height: min(31dvh, 255px) !important; }
+#p-harta .tl { padding: 6px 8px; }
+
+/* ---------- ENERGIE, dupa cresterea din v24 ---------- */
+/*
+ * v24 a adaugat un panou nou si inca o explicatie lunga, iar ecranul a sarit
+ * de la 710 la 1220px. Notele lungi de la sfarsit sunt de citit o data si
+ * inteles, nu de urmarit din mers: le strangem tare, dar raman intregi.
+ */
+#p-hibrid .detalii { font-size: 10.5px !important; line-height: 1.25 !important; }
+#p-hibrid .detalii p { margin: 2px 0 !important; }
+#p-hibrid .tl { padding: 5px 7px !important; }
+#p-hibrid .cut { padding: 3px 5px !important; }
+#p-hibrid .cut .val { font-size: clamp(14px, 1.8vmin, 22px) !important; }
+#p-hibrid .cut .lbl { font-size: 8px !important; }
+#p-hibrid .val { font-size: clamp(16px, 2vmin, 26px) !important; }
+#p-hibrid .rw { font-size: 10.5px !important; padding: 0 !important; }
+#p-hibrid .g { gap: 4px !important; margin-bottom: 4px !important; }
+
+/* ---------- SETARI, dupa cresterea din v24 ---------- */
+#p-setari .detalii { font-size: 10.5px !important; line-height: 1.25 !important; }
+#p-setari .cut { padding: 3px 5px !important; }
+
+/* doua titluri lungi ies din cartonas cu nowrap; pe acestea le lasam sa curga */
+#p-hibrid .lbl { white-space: normal !important; }
+/* nota de sub harta e lunga si trebuie citita intreaga */
+#p-harta .mic, #p-harta .lbl { white-space: normal !important; overflow: visible !important; }
+/* starea hartii e un text, nu o cifra: are voie sa curga pe doua randuri */
+#p-harta #stareaHartii { font-size: 11px !important; white-space: normal !important;
+  line-height: 1.2; word-break: break-word; }

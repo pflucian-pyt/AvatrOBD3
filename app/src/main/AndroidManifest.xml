@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Bluetooth, Android 12 si mai nou -->
+    <uses-permission android:name="android.permission.BLUETOOTH_SCAN"
+        android:usesPermissionFlags="neverForLocation" />
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+
+    <!-- Bluetooth, Android 11 si mai vechi -->
+    <uses-permission android:name="android.permission.BLUETOOTH"
+        android:maxSdkVersion="30" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"
+        android:maxSdkVersion="30" />
+
+    <!-- GPS pentru ecranul HARTA. FARA maxSdkVersion: harta trebuie sa mearga
+         si pe Android 12+, unde localizarea e separata de Bluetooth. -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
+    <!-- Panza ecranului din masina. Android Auto o da doar aplicatiilor de
+         navigatie; cu sabloane s-ar putea arata doar randuri de text, nu
+         casete si cadrane. -->
+    <uses-permission android:name="androidx.car.app.ACCESS_SURFACE" />
+
+    <!-- Fara asta, gazda respinge sablonul de navigatie si ecranul cade cu
+         "The car app does not have a required permission". Nu e de ajuns
+         categoria din intent-filter: permisiunea trebuie ceruta pe fata. -->
+    <uses-permission android:name="androidx.car.app.NAVIGATION_TEMPLATES" />
+
+    <!-- serviciul de prim-plan, ca sistemul sa nu opreasca citirea -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CONNECTED_DEVICE" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
+    <!-- export in Descarcari pe Android 9 si mai vechi; de la 10 in sus
+         colectia de Descarcari nu cere permisiune -->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="28" />
+
+    <!-- dalele de harta se descarca de pe internet -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <!-- required="false" intentionat: unitatea CarPuTech poate sa nu declare
+         corect capabilitatea, si atunci instalarea ar fi refuzata degeaba.
+         Lipsa Bluetooth-ului se vede oricum la rulare. -->
+    <uses-feature android:name="android.hardware.bluetooth_le" android:required="false" />
+    <uses-feature android:name="android.hardware.location.gps" android:required="false" />
+
+    <!-- Fara asta, Android 9 si mai nou taie orice cerere http:// fara sa se
+         plange in vreun fel, iar trimiterea pe server pare doar ca "nu merge".
+         Daca serverul tau are TLS si adresa incepe cu https://, linia asta nu
+         schimba nimic; e aici pentru cazul in care pui adresa ca ip:port. -->
+    <application
+        android:usesCleartextTraffic="true"
+        android:label="Avatr Monitor"
+        android:icon="@drawable/ic_lansare"
+        android:hardwareAccelerated="true"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.AppCompat.NoActionBar">
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:launchMode="singleTask"
+            android:screenOrientation="fullSensor"
+            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|density|smallestScreenSize">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- Android Auto -->
+        <meta-data android:name="androidx.car.app.minCarApiLevel" android:value="1" />
+        <meta-data android:name="com.google.android.gms.car.application"
+            android:resource="@xml/automotive_app_desc" />
+
+        <activity
+            android:name=".SetariServer"
+            android:exported="true"
+            android:label="Server Avatr"
+            android:theme="@style/Theme.AppCompat.DayNight">
+            <!-- pornita separat, cu pictograma proprie: asa se ajunge la ea
+                 fara sa umblam in interfata din WebView -->
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <service
+            android:name=".ServiciuMasina"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="androidx.car.app.CarAppService" />
+                <category android:name="androidx.car.app.category.NAVIGATION" />
+            </intent-filter>
+            <!-- O aplicatie din categoria navigatie trebuie sa stie sa
+                 primeasca si o cerere de indrumare; fara filtrul asta, gazda
+                 o poate socoti nevalida. Noi n-o folosim, dar trebuie sa existe. -->
+            <intent-filter>
+                <action android:name="androidx.car.app.action.NAVIGATE" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:scheme="geo" />
+            </intent-filter>
+        </service>
+
+        <service
+            android:name=".ServiciuFundal"
+            android:exported="false"
+            android:foregroundServiceType="connectedDevice|location" />
+    </application>
+</manifest>
